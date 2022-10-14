@@ -1,4 +1,4 @@
-module github.com/tinyzimmer/go-gst
+module github.com/m-rap/go-gst
 
 go 1.16
 
