@@ -428,18 +428,6 @@ func (m *Message) ParseDeviceRemoved() *Device {
 	return FromGstDeviceUnsafeFull(unsafe.Pointer(device))
 }
 
-// ParseDeviceChanged Parses a device-changed message. The device-changed message is
-// produced by GstDeviceProvider or a GstDeviceMonitor. It announces that a device's properties
-// have changed.
-// The first device returned is the updated Device, and the second changedDevice represents
-// the old state of the device.
-func (m *Message) ParseDeviceChanged() (newDevice, oldDevice *Device) {
-	var gstNewDevice, gstOldDevice *C.GstDevice
-	C.gst_message_parse_device_changed((*C.GstMessage)(m.Instance()), &gstNewDevice, &gstOldDevice)
-	return FromGstDeviceUnsafeFull(unsafe.Pointer(gstNewDevice)),
-		FromGstDeviceUnsafeFull(unsafe.Pointer(gstOldDevice))
-}
-
 // ParsePropertyNotify parses a property-notify message. These will be posted on the bus only
 // when set up with Element.AddPropertyNotifyWatch (TODO) or Element.AddPropertyDeepNotifyWatch (TODO).
 func (m *Message) ParsePropertyNotify() (obj *Object, propertName string, propertyValue *glib.Value) {

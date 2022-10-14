@@ -66,25 +66,9 @@ func (s *Sample) GetInfo() *Structure { return wrapStructure(C.gst_sample_get_in
 // GetSegment gets the segment associated with the sample. The segmenr remains valid as long as sample is valid.
 func (s *Sample) GetSegment() *Segment { return wrapSegment(C.gst_sample_get_segment(s.Instance())) }
 
-// SetBuffer sets the buffer inside this sample. The sample must be writable.
-func (s *Sample) SetBuffer(buf *Buffer) { C.gst_sample_set_buffer(s.Instance(), buf.Instance()) }
-
 // SetBufferList sets the buffer list for this sample. The sample must be writable.
 func (s *Sample) SetBufferList(buf *BufferList) {
 	C.gst_sample_set_buffer_list(s.Instance(), buf.Instance())
-}
-
-// SetCaps sets the caps on this sample. The sample must be writable.
-func (s *Sample) SetCaps(caps *Caps) { C.gst_sample_set_caps(s.Instance(), caps.Instance()) }
-
-// SetInfo sets the info on this sample. The sample must be writable.
-func (s *Sample) SetInfo(st *Structure) bool {
-	return gobool(C.gst_sample_set_info(s.Instance(), st.Instance()))
-}
-
-// SetSegment sets the segment on this sample. The sample must be writable.
-func (s *Sample) SetSegment(segment *Segment) {
-	C.gst_sample_set_segment(s.Instance(), segment.Instance())
 }
 
 // Unref calls gst_sample_unref on the sample.

@@ -51,11 +51,6 @@ func NewAllocationQuery(caps *Caps, needPool bool) *Query {
 	)))
 }
 
-// NewBitrateQuery constructs a new query object for querying the bitrate.
-func NewBitrateQuery() *Query {
-	return FromGstQueryUnsafeFull(unsafe.Pointer(C.gst_query_new_bitrate()))
-}
-
 // NewBufferingQuery constructs a new query object for querying the buffering status of a stream.
 func NewBufferingQuery(format Format) *Query {
 	return FromGstQueryUnsafeFull(unsafe.Pointer(C.gst_query_new_buffering(
@@ -264,13 +259,6 @@ func (q *Query) ParseAllocation() (caps *Caps, needPool bool) {
 	var needz C.gboolean
 	C.gst_query_parse_allocation(q.Instance(), &gcaps, &needz)
 	return FromGstCapsUnsafeNone(unsafe.Pointer(gcaps)), gobool(needz)
-}
-
-// ParseBitrate gets the results of a bitrate query. See also SetBitrate.
-func (q *Query) ParseBitrate() uint {
-	var out C.guint
-	C.gst_query_parse_bitrate(q.Instance(), &out)
-	return uint(out)
 }
 
 // ParseBufferingPercent gets the percentage of buffered data. This is a value between 0 and 100. The busy indicator is TRUE when
@@ -483,12 +471,6 @@ func (q *Query) RemoveAllocationPoolAt(idx uint) {
 // SetAcceptCapsResult sets result as the result for the query.
 func (q *Query) SetAcceptCapsResult(result bool) {
 	C.gst_query_set_accept_caps_result(q.Instance(), gboolean(result))
-}
-
-// SetBitrate sets the results of a bitrate query. The nominal bitrate is the average bitrate expected over the length of the stream as advertised
-// in file headers (or similar).
-func (q *Query) SetBitrate(nominal uint) {
-	C.gst_query_set_bitrate(q.Instance(), C.guint(nominal))
 }
 
 // SetBufferingPercent sets the percentage of buffered data. This is a value between 0 and 100. The busy indicator is TRUE when the buffering is

@@ -39,12 +39,6 @@ type ClockID struct {
 // Instance returns the underlying pointer.
 func (c *ClockID) Instance() C.GstClockID { return c.ptr }
 
-// GetClock returns the clock for this ClockID.
-func (c *ClockID) GetClock() *Clock {
-	clk := C.gst_clock_id_get_clock(c.Instance())
-	return FromGstClockUnsafeFull(unsafe.Pointer(clk))
-}
-
 // GetTime returns the time for this ClockID
 func (c *ClockID) GetTime() time.Duration {
 	return time.Duration(C.gst_clock_id_get_time(c.Instance()))
@@ -54,12 +48,6 @@ func (c *ClockID) GetTime() time.Duration {
 // After this call, id cannot be used anymore to receive sync or async notifications, you need to create a new GstClockID.
 func (c *ClockID) Unschedule() {
 	C.gst_clock_id_unschedule(c.Instance())
-}
-
-// UsesClock returns whether id uses clock as the underlying clock. clock can be nil, in which case the return value indicates whether the
-// underlying clock has been freed. If this is the case, the id is no longer usable and should be freed.
-func (c *ClockID) UsesClock(clock *Clock) bool {
-	return gobool(C.gst_clock_id_uses_clock(c.Instance(), clock.Instance()))
 }
 
 // Wait performs a blocking wait on id. id should have been created with NewSingleShotID or NewPeriodicID and should not have been unscheduled
@@ -80,25 +68,25 @@ func (c *ClockID) Wait() (ret ClockReturn, jitter ClockTimeDiff) {
 //
 // The callback func can be invoked from any thread, either provided by the core or from a streaming thread. The application should be prepared for this.
 //
-//   // Example
+//	// Example
 //
-//   pipeline, _ := gst.NewPipelineFromString("fakesrc ! fakesink")
-//   defer pipeline.Unref()
+//	pipeline, _ := gst.NewPipelineFromString("fakesrc ! fakesink")
+//	defer pipeline.Unref()
 //
-//   clock := pipeline.GetPipelineClock()
+//	clock := pipeline.GetPipelineClock()
 //
-//   id := clock.NewSingleShotID(gst.ClockTime(1000000000)) // 1 second
+//	id := clock.NewSingleShotID(gst.ClockTime(1000000000)) // 1 second
 //
-//   id.WaitAsync(func(clock *gst.Clock, clockTime time.Duration) bool {
-//       fmt.Println("Single shot triggered at", clockTime.Nanoseconds())
-//       pipeline.SetState(gst.StateNull)
-//       return true
-//   })
+//	id.WaitAsync(func(clock *gst.Clock, clockTime time.Duration) bool {
+//	    fmt.Println("Single shot triggered at", clockTime.Nanoseconds())
+//	    pipeline.SetState(gst.StateNull)
+//	    return true
+//	})
 //
-//   pipeline.SetState(gst.StatePlaying)
-//   gst.Wait(pipeline)
+//	pipeline.SetState(gst.StatePlaying)
+//	gst.Wait(pipeline)
 //
-//   // Single shot triggered at 1000000000
+//	// Single shot triggered at 1000000000
 func (c *ClockID) WaitAsync(f ClockCallback) ClockReturn {
 	ptr := gopointer.Save(f)
 	return ClockReturn(C.gst_clock_id_wait_async(
@@ -272,7 +260,7 @@ func (c *Clock) NewSingleShotID(at time.Duration) *ClockID {
 }
 
 // PeriodicIDReinit reinitializes the provided periodic id to the provided start time and interval. Does not
-/// modify the reference count.
+// / modify the reference count.
 func (c *Clock) PeriodicIDReinit(clockID *ClockID, startTime, interval time.Duration) bool {
 	return gobool(C.gst_clock_periodic_id_reinit(
 		c.Instance(),

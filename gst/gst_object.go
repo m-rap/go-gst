@@ -72,15 +72,6 @@ func (o *Object) Log(cat *DebugCategory, level DebugLevel, message string) {
 	cat.logDepth(level, message, 2, (*C.GObject)(o.Unsafe()))
 }
 
-// Clear will will clear all references to this object. If the reference is already null
-// the the function does nothing. Otherwise the reference count is decreased and the pointer
-// set to null.
-func (o *Object) Clear() {
-	if ptr := o.Unsafe(); ptr != nil {
-		C.gst_clear_object((**C.GstObject)(unsafe.Pointer(&ptr)))
-	}
-}
-
 // Ref increments the reference count on object. This function does not take the lock on object
 // because it relies on atomic refcounting. For convenience the same object is returned.
 func (o *Object) Ref() *Object {
